@@ -29,7 +29,7 @@ window.pageReady = async function pageReady() {
     steempay : {
       sc2: {
         app: 'sturn.app',
-        callbackURL: 'htts://rynomad.github.io',
+        callbackURL: 'https://rynomad.github.io',
         scope: [
           'vote',
           'comment',
