@@ -44,7 +44,9 @@ window.pageReady = async function pageReady() {
   if (client.bot.username === 'steempaytestfive'){
     const call = client.call('rynomad')
     call.on('start', () => {
+      console.log("got call start event")
       var event = new CustomEvent('call', { detail: client });
+      console.log("dispatching")
       window.dispatchEvent(event)
     })
   } else {
@@ -32742,7 +32744,6 @@ class CallRecorder extends EventEmitter {
     });
     this.dcs.video.onopen = () => {
       console.log("VIDEO DC CONNECTED");
-      this.emi
       //this.startRecording()
     };
 
