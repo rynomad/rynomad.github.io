@@ -32759,11 +32759,7 @@ class CallRecorder extends EventEmitter {
     });
     this.dcs.signal.onopen = () => {
       console.log("SIGNAL CHANNEL OPEN", this.dcs.signal);
-      
-      console.log("got call start event")
-      var event = new CustomEvent('call', { detail: client });
-      console.log("dispatching")
-      window.dispatchEvent(event)
+      this.emit('start')
     };
 
     this.dcs.signal.onclose = () => {
