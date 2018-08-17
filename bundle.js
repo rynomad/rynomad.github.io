@@ -43,12 +43,7 @@ window.pageReady = async function pageReady() {
   client.start()
   if (client.bot.username === 'steempaytestfive'){
     const call = client.call('rynomad')
-    call.addListener('start', () => {
-      console.log("got call start event")
-      var event = new CustomEvent('call', { detail: client });
-      console.log("dispatching")
-      window.dispatchEvent(event)
-    })
+    console.log("call?", call)
   } else {
     await client.getCredential()
   }
@@ -32757,7 +32752,11 @@ class CallRecorder extends EventEmitter {
     });
     this.dcs.signal.onopen = () => {
       console.log("SIGNAL CHANNEL OPEN", this.dcs.signal);
-      this.emit('start')
+      
+      console.log("got call start event")
+      var event = new CustomEvent('call', { detail: client });
+      console.log("dispatching")
+      window.dispatchEvent(event)
     };
 
     this.dcs.signal.onclose = () => {
