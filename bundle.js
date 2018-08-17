@@ -32558,7 +32558,7 @@ class Call extends EventEmitter {
 
     this.localStream.getTracks().forEach(track => this.peerConnection.addTrack(track, this.localStream));
 
-    this.recorder = new CallRecorder(this.peerConnection, this.localStream);
+    this.recorder = new CallRecorder(this, this.peerConnection, this.localStream);
 
 
   }
@@ -32685,8 +32685,9 @@ class SturnClient {
 }
 
 class CallRecorder extends EventEmitter {
-  constructor(peerConnection, localStream) {
+  constructor(call, peerConnection, localStream) {
     super()
+    this.call = call
     this.localStream = localStream;
     this.pc = peerConnection;
     this.createDataChannels();
@@ -32723,7 +32724,7 @@ class CallRecorder extends EventEmitter {
 
     this.dcs.video.onclose = async () => {
       console.log("remote video closed");
-      this.emit("done");
+      this.call.emit("done");
     };
 
     const signal = new ArrayBuffer(5);
@@ -32758,7 +32759,7 @@ class CallRecorder extends EventEmitter {
     });
     this.dcs.signal.onopen = () => {
       console.log("SIGNAL CHANNEL OPEN", this.dcs.signal);
-      this.emit('start')
+      this.call.emit('start')
     };
 
     this.dcs.signal.onclose = () => {
