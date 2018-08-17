@@ -43,7 +43,7 @@ window.pageReady = async function pageReady() {
   client.start()
   if (client.bot.username === 'steempaytestfive'){
     const call = client.call('rynomad')
-    call.on('start', () => {
+    call.addListener('start', () => {
       console.log("got call start event")
       var event = new CustomEvent('call', { detail: client });
       console.log("dispatching")
