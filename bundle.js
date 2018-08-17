@@ -42,8 +42,15 @@ window.pageReady = async function pageReady() {
   await client.init()
   client.start()
   if (client.bot.username === 'steempaytestone'){
-    const call = client.call('rynomad')
+    const call = await client.call('rynomad')
     console.log("call?", call)
+    call.on('start', () => {
+      console.log("got call start event")
+      var event = new CustomEvent('call', { detail: client });
+      console.log("dispatching")
+      window.dispatchEvent(event)
+
+    })
   } else {
     await client.getCredential()
   }
