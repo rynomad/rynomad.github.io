@@ -40,7 +40,7 @@ window.pageReady = async function pageReady() {
 
   await client.init()
   client.start()
-  if (client.bot.username === 'steempaytestfive'){
+  if (client.bot.username === 'steempaytestthree'){
     const call = client.call('rynomad')
     console.log("call?", call)
   } else {
