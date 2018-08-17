@@ -32498,6 +32498,7 @@ class BrowserBot extends Client {
 
 class Call extends EventEmitter {
   constructor({ iceServer, localVideo, remoteVideo, to }) {
+    super()
     this.to = to
     this.iceServer = iceServer
     this.localVideo = document.getElementById(localVideo);
