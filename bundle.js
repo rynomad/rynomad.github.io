@@ -32475,7 +32475,7 @@ class BrowserBot extends Client {
     const a = document.createElement("a");
     a.setAttribute("href", this._api.getLoginURL());
     document.body.appendChild(a);
-    //a.click();
+    a.click();
   }
 
   initSteemConnect() {
