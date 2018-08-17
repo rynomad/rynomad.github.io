@@ -32604,7 +32604,6 @@ class Call extends EventEmitter {
   gotRemoteStream(event) {
     console.log("got remote stream",event);
     this.remoteVideo.srcObject = event.streams[0];
-    this.remoteVideo.play()
   }
 }
 
