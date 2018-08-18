@@ -41,6 +41,7 @@ window.pageReady = async function pageReady() {
   await client.init()
   window.client = client
   client.on('callable', () => {
+    console.log("got callables", this.callServices)
     const container = document.getElementById('callbuttons')
     while (container.firstChild) {
       container.firstChild.remove();
