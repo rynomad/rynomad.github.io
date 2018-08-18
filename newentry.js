@@ -41,6 +41,20 @@ window.pageReady = async function pageReady() {
   await client.init()
   client.start()
   window.client = client
+  client.on('callable', ({seller}) => {
+    const container = document.getElementById('callbuttons')
+    while (container.firstChild) {
+      container.firstChild.remove();
+    }
+    this.callServices.forEach(({seller}) => {
+      const el = document.createElement('input')
+      el.setAttribute('type','button')
+      el.onclick = () => {
+        client.call(seller)
+      }
+      container.appendChild(el)
+    })
+  })
   if (client.bot.username === 'steempaytesttwo'){
     const call = await client.call('rynomad')
     console.log("call?", call)
