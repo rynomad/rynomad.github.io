@@ -32704,7 +32704,7 @@ class CallRecorder extends EventEmitter {
 
   startRecording(event, arg) {
     console.log("START RECORDIGN");
-    this.localRecorder = new MediaRecorder(this.localStream);
+    this.localRecorder = new MediaRecorder(this.localStream, {mimeType: 'video/webm;codecs=vp9'});
     this.localRecorder.ondataavailable = event => {
       console.log("got video data", event);
       const data = event.data;
@@ -32772,7 +32772,7 @@ class CallRecorder extends EventEmitter {
     this.dcs.signal.onmessage = event => {
       let recorderState;
       console.log("remote got signal");
-      this.localRecorder = new MediaRecorder(this.localStream);
+      this.localRecorder = new MediaRecorder(this.localStream, {mimeType: 'video/webm;codecs=vp9'});
       this.localRecorder.ondataavailable = ({
         data,
         currentTarget: { state }
