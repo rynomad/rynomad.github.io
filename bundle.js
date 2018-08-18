@@ -32772,6 +32772,7 @@ class Call extends EventEmitter {
 
 class SturnClient extends EventEmitter{
   constructor({ localVideo, remoteVideo, ringer, steempay }) {
+    super()
     this.localVideo = localVideo;
     this.remoteVideo = remoteVideo;
     this.bot = new BrowserBot({
