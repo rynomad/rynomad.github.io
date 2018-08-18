@@ -40,7 +40,7 @@ window.pageReady = async function pageReady() {
 
   await client.init()
   window.client = client
-  client.on('callable', ({seller}) => {
+  client.on('callable', () => {
     const container = document.getElementById('callbuttons')
     while (container.firstChild) {
       container.firstChild.remove();
