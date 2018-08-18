@@ -50,6 +50,7 @@ window.pageReady = async function pageReady() {
     client.callServices.forEach(({seller}) => {
       const el = document.createElement('input')
       el.setAttribute('type','button')
+      el.setAttribute('value', seller)
       el.onclick = () => {
         client.call(seller)
       }
