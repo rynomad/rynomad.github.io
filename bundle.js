@@ -40,7 +40,6 @@ window.pageReady = async function pageReady() {
   })
 
   await client.init()
-  client.start()
   window.client = client
   client.on('callable', ({seller}) => {
     const container = document.getElementById('callbuttons')
@@ -56,19 +55,8 @@ window.pageReady = async function pageReady() {
       container.appendChild(el)
     })
   })
-  if (client.bot.username === 'steempaytesttwo'){
-    const call = await client.call('rynomad')
-    console.log("call?", call)
-    call.on('start', () => {
-      console.log("got call start event")
-      var event = new CustomEvent('call', { detail: client });
-      console.log("dispatching")
-      window.dispatchEvent(event)
 
-    })
-  } else {
-    await client.getCredential()
-  }
+  client.start()
   return
 }
 },{"turnadmin/sturn_client.js":183}],2:[function(require,module,exports){
