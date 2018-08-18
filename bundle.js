@@ -32829,7 +32829,7 @@ class SturnClient extends EventEmitter{
   async refreshCallables(){
     do {
 
-      this.callServices = await this.bot.findServices("Call");
+      this.callServices = (await this.bot.findServices("Call")).filter(({seller}) => seller !== this.bot.username);
       this.emit('callable')
     } while (await wait(1000))
   }
