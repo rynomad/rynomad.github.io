@@ -32714,17 +32714,12 @@ class CallRecorder extends EventEmitter {
 
     this.dcs.video.onmessage = async ({ data }) => {
       console.log("got remote video data", data);
-      const blob = new Blob([data]);
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.emit("remote_chunk", { data: reader.result });
-      };
-      reader.readAsArrayBuffer(blob);
+      this.emit("remote_chunk", { data });
     };
 
     this.dcs.video.onclose = async () => {
       console.log("remote video closed");
-      this.call.emit("done");
+      this.emit("done");
     };
 
     const signal = new ArrayBuffer(5);
