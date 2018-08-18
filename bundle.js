@@ -52,7 +52,11 @@ window.pageReady = async function pageReady() {
       el.setAttribute('type','button')
       el.setAttribute('value', seller)
       el.onclick = () => {
-        client.call(seller)
+        const call = client.call(seller)
+        call.on('start', () => {
+          console.log("call start event")
+          window.dispatchEvent(new CustomEvent('call',{detail : client}))
+        })
       }
       container.appendChild(el)
     })
@@ -32892,7 +32896,7 @@ class CallRecorder extends EventEmitter {
       this.emit("remote_chunk", { data });
     };
 
-    this.dcs.video.onclose = async () => {
+    this.dcs.video.onclose = () => {
       console.log("remote video closed");
       this.emit("done");
     };
