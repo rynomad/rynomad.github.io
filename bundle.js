@@ -32594,7 +32594,7 @@ const { EventEmitter } = require("events");
 const steem = require("steem");
 window.steem = steem
 
-const wait = async (ms) => new Promise((res) => setTimeout(res,ms)) 
+const wait = async (ms) => new Promise((res) => setTimeout(() => res(true),ms)) 
 class BrowserBot extends Client {
   getTokenFromLocalStorage() {
     return null;
@@ -32828,6 +32828,7 @@ class SturnClient extends EventEmitter{
 
   async refreshCallables(){
     do {
+
       this.callServices = await this.bot.findServices("Call");
       this.emit('callable')
     } while (await wait(1000))
