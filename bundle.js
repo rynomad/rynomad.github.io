@@ -32431,6 +32431,8 @@ const steemconnect = require("sc2-sdk");
 const { EventEmitter } = require("events");
 const steem = require("steem");
 window.steem = steem
+
+const wait = async (ms) => new Promise((res) => setTimeout(res,ms)) 
 class BrowserBot extends Client {
   getTokenFromLocalStorage() {
     return null;
