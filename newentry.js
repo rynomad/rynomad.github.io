@@ -45,7 +45,7 @@ window.pageReady = async function pageReady() {
     while (container.firstChild) {
       container.firstChild.remove();
     }
-    this.callServices.forEach(({seller}) => {
+    client.callServices.forEach(({seller}) => {
       const el = document.createElement('input')
       el.setAttribute('type','button')
       el.onclick = () => {
