@@ -50,8 +50,8 @@ window.pageReady = async function pageReady() {
       const el = document.createElement('input')
       el.setAttribute('type','button')
       el.setAttribute('value', seller)
-      el.onclick = () => {
-        const call = client.call(seller)
+      el.onclick = async () => {
+        const call = await client.call(seller)
         call.on('start', () => {
           console.log("call start event")
           window.dispatchEvent(new CustomEvent('call',{detail : client}))
