@@ -32756,7 +32756,10 @@ class Call extends EventEmitter {
       }
     } else if (signal.ice) {
       const candidate = new RTCIceCandidate(signal.ice);
-      await this.peerConnection.addIceCandidate(candidate);
+      if (candidate.type === 'relay'){
+
+        await this.peerConnection.addIceCandidate(candidate);
+      }
     }
   }
 
