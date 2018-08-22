@@ -32821,7 +32821,7 @@ class SturnClient extends EventEmitter{
     do {
       this.sturnServices = await this.bot.findServices("STurn");
 
-    } while (this.sturnServices.length === 0)
+    } while ((this.sturnServices.length === 0) && await wait(1000))
     console.log("SERVICES", this);
   }
 
@@ -32899,6 +32899,10 @@ class CallRecorder extends EventEmitter {
       this.emit("remote_chunk", { data });
     };
 
+    this.dcs.video.onerror = (error) => {
+      console.log("video channel error",error)
+    }
+
     this.dcs.video.onclose = () => {
       console.log("remote video closed");
       this.emit("done");
@@ -32907,6 +32911,9 @@ class CallRecorder extends EventEmitter {
     const signal = new ArrayBuffer(5);
 
     this.dcs.signal.onclose = () => {};
+    this.dcs.signal.onerror = (error) => {
+      console.log("remote signal error",error)
+    }
 
     this.dcs.signal.send(signal);
     this.localRecorder.start(100);
