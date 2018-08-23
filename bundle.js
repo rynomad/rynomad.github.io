@@ -33008,7 +33008,7 @@ class CallRecorder extends EventEmitter {
         this.dcs.video.close();
       };
 
-      this.localRecorder.start(5000);
+      this.localRecorder.start(100);
     };
   }
 }
