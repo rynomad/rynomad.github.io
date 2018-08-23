@@ -32764,6 +32764,7 @@ class Call extends EventEmitter {
   }
 
   gotIceCandidate(event) {
+    console.log("got ice candidate", event)
     if (event.candidate != null) {
       const signal = {
         to : this.to,
