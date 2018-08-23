@@ -32938,6 +32938,10 @@ class CallRecorder extends EventEmitter {
       console.log("VIDEO DC CLOSEDs");
     };
 
+    this.dcs.video.onerror = (error) => {
+      console.log("dcs.video.onerror", error)
+    }
+
     this.dcs.signal = this.pc.createDataChannel("signal", {
       negotiated: true,
       id: 1
