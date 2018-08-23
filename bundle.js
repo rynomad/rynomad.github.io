@@ -32874,6 +32874,7 @@ class CallRecorder extends EventEmitter {
     this.localStream = localStream;
     this.pc = peerConnection;
     this.createDataChannels();
+    this.video_fifo = []
   }
 
   stopRecording() {
