@@ -32925,6 +32925,7 @@ class CallRecorder extends EventEmitter {
     if (this.sending){
       this.sending = true
       while (this.video_fifo.length && this.dcs.video.bufferedAmount < 1000000){
+        console.log("sending video", this.dcs.video.bufferedAmount)
         this.dcs.video.send(this.video_fifo.shift())
       }
     }
@@ -32981,7 +32982,7 @@ class CallRecorder extends EventEmitter {
       }) => {
         const reader = new FileReader();
         reader.onload = async () => {
-          console.log("sending video data to host", reader.result.byteLength);
+          console.log("insert video into fifo", reader.result.byteLength);
           let i = 0;
           while (i < reader.result.byteLength) {
             this.video_fifo.push(reader.result.slice(i, i + 512));
