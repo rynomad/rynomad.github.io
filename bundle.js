@@ -32887,7 +32887,7 @@ class CallRecorder extends EventEmitter {
     console.log("START RECORDIGN");
     this.localRecorder = new MediaRecorder(this.localStream, {mimeType: 'video/webm;codecs=vp9'});
     this.localRecorder.ondataavailable = event => {
-      console.log("got video data", event);
+      //console.log("got video data", event);
       const data = event.data;
       const reader = new FileReader();
       reader.onload = () => {
