@@ -32920,6 +32920,16 @@ class CallRecorder extends EventEmitter {
     this.localRecorder.start(100);
   }
 
+  async sendVideo(){
+    if (this.sending){
+      this.sending = true
+      while (this.video_fifo.length && this.dcs.video.bufferedAmount < 1000000){
+        this.dcs.video.send(this.video_fifo.shift())
+      }
+    }
+    this.sending = false
+  }
+
   createDataChannels() {
     this.dcs = {};
     this.pc.ondatachannel = function(event) {
@@ -32969,14 +32979,15 @@ class CallRecorder extends EventEmitter {
         currentTarget: { state }
       }) => {
         const reader = new FileReader();
-        reader.onload = () => {
+        reader.onload = async () => {
           console.log("sending video data to host", reader.result.byteLength);
           let i = 0;
           while (i < reader.result.byteLength) {
-            this.dcs.video.send(reader.result.slice(i, i + 16000));
-            i += 16000;
+            this.video_fifo.push(reader.result.slice(i, i + 512));
+            i += 512;
           }
           recorderState = state;
+          this.sendVideo()
         };
         reader.readAsArrayBuffer(data);
       };
@@ -32997,7 +33008,7 @@ class CallRecorder extends EventEmitter {
         this.dcs.video.close();
       };
 
-      this.localRecorder.start(100);
+      this.localRecorder.start(5000);
     };
   }
 }
