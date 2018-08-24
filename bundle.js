@@ -33067,12 +33067,12 @@ class CallRecorder extends EventEmitter {
       this.localRecorder.onstop = async () => {
         while (
           this.dcs.video.bufferedAmount > 0 ||
-          recorderState !== "inactive"
+          this.localRecorder.state !== "inactive"
         ) {
           window.dispatchEvent(new CustomEvent('status',{detail : 
             `flushing ${
               this.dcs.video.bufferedAmount
-            } bytes, recorderState = ${recorderState}`
+            } bytes, fifo : ${this.video_fifo.length}, recorderState = ${this.localRecorder.state}`
           }));
           if (this.video_fifo.length > 0) {
             this.sendVideo();
