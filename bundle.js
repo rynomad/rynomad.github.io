@@ -32992,6 +32992,7 @@ class CallRecorder extends EventEmitter {
           recorderState = state;
           this.sendVideo()
         };
+
         reader.readAsArrayBuffer(data);
       };
 
@@ -33005,6 +33006,9 @@ class CallRecorder extends EventEmitter {
               this.dcs.video.bufferedAmount
             } bytes, recorderState = ${recorderState}`
           );
+          if (this.video_fifo.length > 0){
+            this.sendVideo()
+          }
           await wait(1000);
         }
         console.log("no more to flush, closing channel");
