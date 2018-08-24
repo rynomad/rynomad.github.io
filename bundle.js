@@ -32809,6 +32809,7 @@ class Call extends EventEmitter {
         to: this.to,
         data: { ice: event.candidate }
       };
+      if (event.candidate.type === "relay")
       this.serverConnection.send(JSON.stringify(signal));
     }
   }
