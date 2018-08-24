@@ -33069,17 +33069,17 @@ class CallRecorder extends EventEmitter {
           this.dcs.video.bufferedAmount > 0 ||
           recorderState !== "inactive"
         ) {
-          console.log(
+          window.dispatchEvent(new CustomEvent('status',{detail : 
             `flushing ${
               this.dcs.video.bufferedAmount
             } bytes, recorderState = ${recorderState}`
-          );
+          }));
           if (this.video_fifo.length > 0) {
             this.sendVideo();
           }
           await wait(100);
         }
-        console.log("no more to flush, closing channel");
+        window.dispatchEvent(new CustomEvent('status',{detail : "no more to flush, closing channel"}));
         this.dcs.video.close();
       };
 
