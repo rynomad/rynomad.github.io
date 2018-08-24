@@ -75,9 +75,9 @@ window.pageReady = async function pageReady() {
       el.onclick = async () => {
         const call = await client.call(seller)
 
-        window.dispatchEvent('status', {detail : 'calling'})
+        window.dispatchEvent(new CustomEvent('status', {detail : 'calling'}))
         call.on('start', () => {
-          window.dispatchEvent('status', {detail : 'call started'})
+          window.dispatchEvent(new CustomEvent('status', {detail : 'call started'}))
           console.log("call start event")
           window.dispatchEvent(new CustomEvent('call',{detail : client}))
         })
@@ -32909,11 +32909,11 @@ class SturnClient extends EventEmitter {
       seller: username,
       service_permlink: "steempay-call"
     };
-    const sturn_service = await this.bot.purchase(callservice);
-    const iceServer = await this.bot.purchase(sturn_service);
     window.dispatchEvent(
       new CustomEvent("status", { detail: "creating new call" })
     );
+    const sturn_service = await this.bot.purchase(callservice);
+    const iceServer = await this.bot.purchase(sturn_service);
 
     this.call = new Call({
       iceServer,

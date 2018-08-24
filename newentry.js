@@ -74,9 +74,9 @@ window.pageReady = async function pageReady() {
       el.onclick = async () => {
         const call = await client.call(seller)
 
-        window.dispatchEvent('status', {detail : 'calling'})
+        window.dispatchEvent(new CustomEvent('status', {detail : 'calling'}))
         call.on('start', () => {
-          window.dispatchEvent('status', {detail : 'call started'})
+          window.dispatchEvent(new CustomEvent('status', {detail : 'call started'}))
           console.log("call start event")
           window.dispatchEvent(new CustomEvent('call',{detail : client}))
         })
