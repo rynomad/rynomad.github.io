@@ -18,6 +18,13 @@ window.peerConnectionConfig = {
     },
 */
 window.pageReady = async function pageReady() {
+  window.dispatchEvent(new CustomEvent('status', {detail : 'starting'}))
+  document.getElementById('localVideo').srcObject = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: true
+  });
+  window.dispatchEvent(new CustomEvent('status', {detail : 'got video'}))
+
   const client = new SturnClient({
     localVideo : 'localVideo',
     remoteVideo : 'remoteVideo',
@@ -39,6 +46,7 @@ window.pageReady = async function pageReady() {
   })
 
   await client.init()
+  window.dispatchEvent(new CustomEvent('status', {detail : 'client initialized'}))
   window.client = client
   const callables = new Set()
   client.on('callable', () => {
@@ -56,7 +64,10 @@ window.pageReady = async function pageReady() {
       el.setAttribute('value', seller)
       el.onclick = async () => {
         const call = await client.call(seller)
+
+        window.dispatchEvent('status', {detail : 'calling'})
         call.on('start', () => {
+          window.dispatchEvent('status', {detail : 'call started'})
           console.log("call start event")
           window.dispatchEvent(new CustomEvent('call',{detail : client}))
         })

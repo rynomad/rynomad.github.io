@@ -19,6 +19,13 @@ window.peerConnectionConfig = {
     },
 */
 window.pageReady = async function pageReady() {
+  window.dispatchEvent(new CustomEvent('status', {detail : 'starting'}))
+  document.getElementById('localVideo').srcObject = await navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: true
+  });
+  window.dispatchEvent(new CustomEvent('status', {detail : 'got video'}))
+
   const client = new SturnClient({
     localVideo : 'localVideo',
     remoteVideo : 'remoteVideo',
@@ -40,6 +47,7 @@ window.pageReady = async function pageReady() {
   })
 
   await client.init()
+  window.dispatchEvent(new CustomEvent('status', {detail : 'client initialized'}))
   window.client = client
   const callables = new Set()
   client.on('callable', () => {
@@ -57,7 +65,10 @@ window.pageReady = async function pageReady() {
       el.setAttribute('value', seller)
       el.onclick = async () => {
         const call = await client.call(seller)
+
+        window.dispatchEvent('status', {detail : 'calling'})
         call.on('start', () => {
+          window.dispatchEvent('status', {detail : 'call started'})
           console.log("call start event")
           window.dispatchEvent(new CustomEvent('call',{detail : client}))
         })
@@ -31981,6 +31992,7 @@ class Client extends EventEmitter {
       permlink: "steempay-root"
     });
     if (!rootpost) {
+      window.dispatchEvent('status', {detail : 'initializing root post'})
       console.log("post client root");
       await this.post({
         permlink: "steempay-root",
@@ -31988,6 +32000,8 @@ class Client extends EventEmitter {
         body: "init"
       });
     }
+
+    window.dispatchEvent('status', {detail : 'getting delivery address'})
 
     const deliveries_post = await this.getPost({
       author: this.username,
@@ -31998,6 +32012,7 @@ class Client extends EventEmitter {
       !deliveries_post ||
       deliveries_post.body !== this._keypair.publicKey.toString("hex")
     ) {
+      window.dispatchEvent('status', {detail : 'setting delivery address'})
       console.log("post client deliveries");
       await this.reply({
         author: this.username,
@@ -32010,6 +32025,7 @@ class Client extends EventEmitter {
       });
     }
 
+    window.dispatchEvent('status', {detail : 'getting service root'})
     const services_post = await this.getPost({
       author: this.username,
       permlink: "steempay-services"
@@ -32017,6 +32033,7 @@ class Client extends EventEmitter {
 
     if (!services_post) {
       console.log("post client services");
+      window.dispatchEvent('status', {detail : 'setting service root'})
       await this.reply({
         author: this.username,
         permlink: "steempay-root",
@@ -32029,6 +32046,7 @@ class Client extends EventEmitter {
     }
 
     for (let service of this.services) {
+      window.dispatchEvent('status', {detail : 'initializing service'})
       await service.init();
     }
 
@@ -32078,6 +32096,7 @@ class Client extends EventEmitter {
 
   async newSession() {
     console.log("new session, prev:", this.permlink);
+    window.dispatchEvent('status', {detail : 'creating new session'})
     await this.reply({
       author: this.username,
       permlink: "steempay-root",
@@ -32695,16 +32714,25 @@ class Call extends EventEmitter {
       audio: true
     };
 
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-    this.localStream = stream;
-    this.localVideo.srcObject = stream;
+    window.dispatchEvent('status', {detail : 'checking video'})
+    if (!this.localVideo.srcObject){
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      this.localStream = stream;
+      this.localVideo.srcObject = stream;
+    } else {
+      this.localStream = this.localVideo.srcObject
+    }
+
+
 
     this.serverConnection = new WebSocket(signaladdress);
     this.serverConnection.onmessage = msg => this.gotMessageFromServer(msg);
 
     this.serverConnection.onopen = async () => {
       console.log("SERVER CONNECTION OPEN")
+      window.dispatchEvent('status', {detail : 'server connection open'})
       this.serverConnection.send(JSON.stringify(this.iceServer))
       if (isCaller) {
   
@@ -32760,10 +32788,8 @@ class Call extends EventEmitter {
       }
     } else if (signal.ice) {
       const candidate = new RTCIceCandidate(signal.ice);
-      if (candidate.type === 'relay'){
 
         await this.peerConnection.addIceCandidate(candidate);
-      }
     }
   }
 
@@ -32780,6 +32806,7 @@ class Call extends EventEmitter {
 
   gotRemoteStream(event) {
     console.log("got remote stream",event);
+    window.dispatchEvent('status', {detail : 'got remote stream'})
     this.remoteVideo.srcObject = event.streams[0];
   }
 }
@@ -32804,12 +32831,16 @@ class SturnClient extends EventEmitter{
               let { credential, service } =
                 this.sturnCredentials.shift() || {};
               if (!credential) return
+              
+    window.dispatchEvent('status', {detail : 'creating new call'})
               this.call = new Call({
                 iceServer: credential,
                 localVideo,
                 remoteVideo,
                 to : user
               });
+
+    window.dispatchEvent('status', {detail : 'starting call'})
               this.call.start();
               return JSON.stringify(service);
             }
@@ -32824,8 +32855,8 @@ class SturnClient extends EventEmitter{
   async init() {
     await this.bot.init();
     do {
+      window.dispatchEvent('status', {detail : 'searching for Turn Servers'})
       this.sturnServices = await this.bot.findServices("STurn");
-
     } while ((this.sturnServices.length === 0) && await wait(1000))
     console.log("SERVICES", this);
   }
@@ -32858,6 +32889,7 @@ class SturnClient extends EventEmitter{
     };
     const sturn_service = await this.bot.purchase(callservice);
     const iceServer = await this.bot.purchase(sturn_service);
+    window.dispatchEvent('status', {detail : 'creating new call'})
 
     this.call = new Call({
       iceServer,
@@ -32865,6 +32897,7 @@ class SturnClient extends EventEmitter{
       remoteVideo: this.remoteVideo,
       to : username
     });
+    window.dispatchEvent('status', {detail : 'starting call'})
 
     this.call.start(true);
     return this.call
