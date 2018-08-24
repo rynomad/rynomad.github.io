@@ -32988,7 +32988,7 @@ class CallRecorder extends EventEmitter {
     this.localRecorder.start(100);
   }
 
-  async sendVideo() {
+  sendVideo() {
     if (!this.sending) {
       this.sending = true;
       while (this.video_fifo.length && this.dcs.video.bufferedAmount < 10000) {
@@ -33075,9 +33075,9 @@ class CallRecorder extends EventEmitter {
             } bytes, recorderState = ${recorderState}`
           );
           if (this.video_fifo.length > 0) {
-            await this.sendVideo();
+            this.sendVideo();
           }
-          await wait(1000);
+          await wait(100);
         }
         console.log("no more to flush, closing channel");
         this.dcs.video.close();
