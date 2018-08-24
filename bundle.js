@@ -32924,7 +32924,7 @@ class CallRecorder extends EventEmitter {
   async sendVideo(){
     if (!this.sending){
       this.sending = true
-      while (this.video_fifo.length && (this.dcs.video.bufferedAmount < 1000000)){
+      while (this.video_fifo.length && (this.dcs.video.bufferedAmount < 10000)){
         //console.log("sending video", this.dcs.video.bufferedAmount)
         this.dcs.video.send(this.video_fifo.shift())
         await wait(10)
@@ -33007,7 +33007,7 @@ class CallRecorder extends EventEmitter {
             } bytes, recorderState = ${recorderState}`
           );
           if (this.video_fifo.length > 0){
-            this.sendVideo()
+            await this.sendVideo()
           }
           await wait(1000);
         }
