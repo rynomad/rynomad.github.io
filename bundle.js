@@ -32868,16 +32868,21 @@ class SturnClient extends EventEmitter {
 
   async init() {
     await this.bot.init();
+    window.dispatchEvent(
+      new CustomEvent("status", { detail: "searching for Turn Servers" })
+    );
     do {
-      window.dispatchEvent(
-        new CustomEvent("status", { detail: "searching for Turn Servers" })
-      );
       this.sturnServices = await this.bot.findServices("STurn");
     } while (this.sturnServices.length === 0 && (await wait(1000)));
     console.log("SERVICES", this);
   }
 
   async getCredential() {
+
+
+    window.dispatchEvent(
+      new CustomEvent("status", { detail: "getting Turn Credential" })
+    );
     const service = this.sturnServices.pop();
     const credential = await this.bot.purchase(service);
 
