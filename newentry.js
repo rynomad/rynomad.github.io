@@ -22,6 +22,7 @@ window.pageReady = async function pageReady() {
     const msg = document.createElement('p')
     msg.innerText = detail
     const status = document.getElementById('status')
+    status.appendChild(msg)
     if (status.childElementCount > 10){
       
       status.firstChild.remove();
