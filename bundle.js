@@ -19,6 +19,15 @@ window.peerConnectionConfig = {
     },
 */
 window.pageReady = async function pageReady() {
+  window.addEventListener('status', ({detail}) => {
+    const msg = document.createElement('p')
+    msg.innerText = detail
+    const status = document.getElementById('status')
+    if (status.childElementCount > 10){
+      
+      status.firstChild.remove();
+    }
+  })
   window.dispatchEvent(new CustomEvent('status', {detail : 'starting'}))
   document.getElementById('localVideo').srcObject = await navigator.mediaDevices.getUserMedia({
     video: true,
