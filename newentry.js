@@ -63,7 +63,6 @@ window.pageReady = async function pageReady() {
     for (const service of client.callServices){
       callables.add(JSON.stringify(service))
     }
-    console.log("got callables", client.callServices)
     const container = document.getElementById('callbuttons')
     while (container.firstChild) {
       container.firstChild.remove();

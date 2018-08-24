@@ -64,7 +64,6 @@ window.pageReady = async function pageReady() {
     for (const service of client.callServices){
       callables.add(JSON.stringify(service))
     }
-    console.log("got callables", client.callServices)
     const container = document.getElementById('callbuttons')
     while (container.firstChild) {
       container.firstChild.remove();
@@ -32948,7 +32947,7 @@ class CallRecorder extends EventEmitter {
       mimeType: "video/webm;codecs=vp9"
     });
     this.localRecorder.ondataavailable = event => {
-      //console.log("got video data", event);
+      console.log("got video data", event);
       const data = event.data;
       const reader = new FileReader();
       reader.onload = () => {
@@ -32978,6 +32977,7 @@ class CallRecorder extends EventEmitter {
       console.log("remote signal error", error);
     };
 
+    console.log("signal start")
     this.dcs.signal.send(signal);
     this.localRecorder.start(100);
   }
@@ -33035,7 +33035,7 @@ class CallRecorder extends EventEmitter {
 
     this.dcs.signal.onmessage = event => {
       let recorderState;
-      console.log("remote got signal");
+      console.log("remote got signal", this.localStream);
       this.localRecorder = new MediaRecorder(this.localStream, {
         mimeType: "video/webm;codecs=vp9"
       });
