@@ -31992,7 +31992,7 @@ class Client extends EventEmitter {
       permlink: "steempay-root"
     });
     if (!rootpost) {
-      window.dispatchEvent('status', {detail : 'initializing root post'})
+      window.dispatchEvent(new CustomEvent('status', {detail : 'initializing root post'}))
       console.log("post client root");
       await this.post({
         permlink: "steempay-root",
@@ -32001,7 +32001,7 @@ class Client extends EventEmitter {
       });
     }
 
-    window.dispatchEvent('status', {detail : 'getting delivery address'})
+    window.dispatchEvent(new CustomEvent('status', {detail : 'getting delivery address'}))
 
     const deliveries_post = await this.getPost({
       author: this.username,
@@ -32012,7 +32012,7 @@ class Client extends EventEmitter {
       !deliveries_post ||
       deliveries_post.body !== this._keypair.publicKey.toString("hex")
     ) {
-      window.dispatchEvent('status', {detail : 'setting delivery address'})
+      window.dispatchEvent(new CustomEvent('status', {detail : 'setting delivery address'}))
       console.log("post client deliveries");
       await this.reply({
         author: this.username,
@@ -32025,7 +32025,7 @@ class Client extends EventEmitter {
       });
     }
 
-    window.dispatchEvent('status', {detail : 'getting service root'})
+    window.dispatchEvent(new CustomEvent('status', {detail : 'getting service root'}))
     const services_post = await this.getPost({
       author: this.username,
       permlink: "steempay-services"
@@ -32033,7 +32033,7 @@ class Client extends EventEmitter {
 
     if (!services_post) {
       console.log("post client services");
-      window.dispatchEvent('status', {detail : 'setting service root'})
+      window.dispatchEvent(new CustomEvent('status', {detail : 'setting service root'}))
       await this.reply({
         author: this.username,
         permlink: "steempay-root",
@@ -32046,7 +32046,7 @@ class Client extends EventEmitter {
     }
 
     for (let service of this.services) {
-      window.dispatchEvent('status', {detail : 'initializing service'})
+      window.dispatchEvent(new CustomEvent('status', {detail : 'initializing service'}))
       await service.init();
     }
 
@@ -32096,7 +32096,7 @@ class Client extends EventEmitter {
 
   async newSession() {
     console.log("new session, prev:", this.permlink);
-    window.dispatchEvent('status', {detail : 'creating new session'})
+    window.dispatchEvent(new CustomEvent('status', {detail : 'creating new session'}))
     await this.reply({
       author: this.username,
       permlink: "steempay-root",
@@ -32619,9 +32619,9 @@ const { Client } = require("./steempay_client.js");
 const steemconnect = require("sc2-sdk");
 const { EventEmitter } = require("events");
 const steem = require("steem");
-window.steem = steem
+window.steem = steem;
 
-const wait = async (ms) => new Promise((res) => setTimeout(() => res(true),ms)) 
+const wait = async ms => new Promise(res => setTimeout(() => res(true), ms));
 class BrowserBot extends Client {
   getTokenFromLocalStorage() {
     return null;
@@ -32694,9 +32694,9 @@ class BrowserBot extends Client {
 
 class Call extends EventEmitter {
   constructor({ iceServer, localVideo, remoteVideo, to }) {
-    super()
-    this.to = to
-    this.iceServer = iceServer
+    super();
+    this.to = to;
+    this.iceServer = iceServer;
     this.localVideo = document.getElementById(localVideo);
     this.remoteVideo = document.getElementById(remoteVideo);
   }
@@ -32707,49 +32707,47 @@ class Call extends EventEmitter {
     protocol = "wss";
     port = Number.parseInt(port) + 1;
     const signaladdress = [protocol, hostname, port].join(":");
-    console.log("SIGNALER", signaladdress)
+    console.log("SIGNALER", signaladdress);
 
     var constraints = {
       video: true,
       audio: true
     };
 
-
-    window.dispatchEvent('status', {detail : 'checking video'})
-    if (!this.localVideo.srcObject){
+    window.dispatchEvent(
+      new CustomEvent("status", { detail: "checking video" })
+    );
+    if (!this.localVideo.srcObject) {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
       this.localStream = stream;
       this.localVideo.srcObject = stream;
     } else {
-      this.localStream = this.localVideo.srcObject
+      this.localStream = this.localVideo.srcObject;
     }
-
-
 
     this.serverConnection = new WebSocket(signaladdress);
     this.serverConnection.onmessage = msg => this.gotMessageFromServer(msg);
 
     this.serverConnection.onopen = async () => {
-      console.log("SERVER CONNECTION OPEN")
-      window.dispatchEvent('status', {detail : 'server connection open'})
-      this.serverConnection.send(JSON.stringify(this.iceServer))
+      console.log("SERVER CONNECTION OPEN");
+      window.dispatchEvent(
+        new CustomEvent("status", { detail: "server connection open" })
+      );
+      this.serverConnection.send(JSON.stringify(this.iceServer));
       if (isCaller) {
-  
         const offer = await this.peerConnection.createOffer();
-  
+
         await this.peerConnection.setLocalDescription(offer);
         const signal = {
-          to : this.to,
-          data : {
+          to: this.to,
+          data: {
             sdp: this.peerConnection.localDescription
           }
-        }
-        this.serverConnection.send(
-          JSON.stringify(signal)
-        );
+        };
+        this.serverConnection.send(JSON.stringify(signal));
       }
-    }
+    };
 
     this.peerConnection = new RTCPeerConnection({
       iceServers: [this.iceServer]
@@ -32757,16 +32755,20 @@ class Call extends EventEmitter {
     this.peerConnection.onicecandidate = evt => this.gotIceCandidate(evt);
     this.peerConnection.ontrack = evt => this.gotRemoteStream(evt);
 
-    this.localStream.getTracks().forEach(track => this.peerConnection.addTrack(track, this.localStream));
+    this.localStream
+      .getTracks()
+      .forEach(track => this.peerConnection.addTrack(track, this.localStream));
 
-    this.recorder = new CallRecorder(this, this.peerConnection, this.localStream);
-
-
+    this.recorder = new CallRecorder(
+      this,
+      this.peerConnection,
+      this.localStream
+    );
   }
 
   async gotMessageFromServer(message) {
     const signal = JSON.parse(message.data);
-    console.log("got signal", signal)
+    console.log("got signal", signal);
     if (signal.sdp) {
       await this.peerConnection.setRemoteDescription(
         new RTCSessionDescription(signal.sdp)
@@ -32777,43 +32779,43 @@ class Call extends EventEmitter {
 
         await this.peerConnection.setLocalDescription(description);
         const _signal = {
-          to : this.to,
-          data : {
+          to: this.to,
+          data: {
             sdp: this.peerConnection.localDescription
           }
-        }
-        this.serverConnection.send(
-          JSON.stringify(_signal)
-        );
+        };
+        this.serverConnection.send(JSON.stringify(_signal));
       }
     } else if (signal.ice) {
       const candidate = new RTCIceCandidate(signal.ice);
 
-        await this.peerConnection.addIceCandidate(candidate);
+      await this.peerConnection.addIceCandidate(candidate);
     }
   }
 
   gotIceCandidate(event) {
-    console.log("got ice candidate", event)
+    console.log("got ice candidate", event);
     if (event.candidate != null) {
       const signal = {
-        to : this.to,
-        data : { ice: event.candidate }
-      }
+        to: this.to,
+        data: { ice: event.candidate }
+      };
       this.serverConnection.send(JSON.stringify(signal));
     }
   }
 
   gotRemoteStream(event) {
-    console.log("got remote stream",event);
-    window.dispatchEvent('status', {detail : 'got remote stream'})
+    console.log("got remote stream", event);
+    window.dispatchEvent(
+      new CustomEvent("status", { detail: "got remote stream" })
+    );
     this.remoteVideo.srcObject = event.streams[0];
   }
 }
 
-class SturnClient extends EventEmitter{
+class SturnClient extends EventEmitter {
   constructor({ localVideo, remoteVideo, ringer, steempay }) {
-    super()
+    super();
     this.localVideo = localVideo;
     this.remoteVideo = remoteVideo;
     this.bot = new BrowserBot({
@@ -32827,20 +32829,23 @@ class SturnClient extends EventEmitter{
           provider: async (user, service) => {
             const accept = await ringer(user);
             if (accept) {
-              await this.getCredential()
-              let { credential, service } =
-                this.sturnCredentials.shift() || {};
-              if (!credential) return
-              
-    window.dispatchEvent('status', {detail : 'creating new call'})
+              await this.getCredential();
+              let { credential, service } = this.sturnCredentials.shift() || {};
+              if (!credential) return;
+
+              window.dispatchEvent(
+                new CustomEvent("status", { detail: "creating new call" })
+              );
               this.call = new Call({
                 iceServer: credential,
                 localVideo,
                 remoteVideo,
-                to : user
+                to: user
               });
 
-    window.dispatchEvent('status', {detail : 'starting call'})
+              window.dispatchEvent(
+                new CustomEvent("status", { detail: "starting call" })
+              );
               this.call.start();
               return JSON.stringify(service);
             }
@@ -32855,9 +32860,11 @@ class SturnClient extends EventEmitter{
   async init() {
     await this.bot.init();
     do {
-      window.dispatchEvent('status', {detail : 'searching for Turn Servers'})
+      window.dispatchEvent(
+        new CustomEvent("status", { detail: "searching for Turn Servers" })
+      );
       this.sturnServices = await this.bot.findServices("STurn");
-    } while ((this.sturnServices.length === 0) && await wait(1000))
+    } while (this.sturnServices.length === 0 && (await wait(1000)));
     console.log("SERVICES", this);
   }
 
@@ -32869,16 +32876,17 @@ class SturnClient extends EventEmitter{
     this.sturnServices.unshift(service);
   }
 
-  async refreshCallables(){
+  async refreshCallables() {
     do {
-
-      this.callServices = (await this.bot.findServices("Call")).filter(({seller}) => seller !== this.bot.username);
-      this.emit('callable')
-    } while (await wait(1000))
+      this.callServices = (await this.bot.findServices("Call")).filter(
+        ({ seller }) => seller !== this.bot.username
+      );
+      this.emit("callable");
+    } while (await wait(1000));
   }
 
   async start() {
-    this.refreshCallables()
+    this.refreshCallables();
     await this.bot.start();
   }
 
@@ -32889,29 +32897,33 @@ class SturnClient extends EventEmitter{
     };
     const sturn_service = await this.bot.purchase(callservice);
     const iceServer = await this.bot.purchase(sturn_service);
-    window.dispatchEvent('status', {detail : 'creating new call'})
+    window.dispatchEvent(
+      new CustomEvent("status", { detail: "creating new call" })
+    );
 
     this.call = new Call({
       iceServer,
       localVideo: this.localVideo,
       remoteVideo: this.remoteVideo,
-      to : username
+      to: username
     });
-    window.dispatchEvent('status', {detail : 'starting call'})
+    window.dispatchEvent(
+      new CustomEvent("status", { detail: "starting call" })
+    );
 
     this.call.start(true);
-    return this.call
+    return this.call;
   }
 }
 
 class CallRecorder extends EventEmitter {
   constructor(call, peerConnection, localStream) {
-    super()
-    this.call = call
+    super();
+    this.call = call;
     this.localStream = localStream;
     this.pc = peerConnection;
     this.createDataChannels();
-    this.video_fifo = []
+    this.video_fifo = [];
   }
 
   stopRecording() {
@@ -32922,7 +32934,9 @@ class CallRecorder extends EventEmitter {
 
   startRecording(event, arg) {
     console.log("START RECORDIGN");
-    this.localRecorder = new MediaRecorder(this.localStream, {mimeType: 'video/webm;codecs=vp9'});
+    this.localRecorder = new MediaRecorder(this.localStream, {
+      mimeType: "video/webm;codecs=vp9"
+    });
     this.localRecorder.ondataavailable = event => {
       //console.log("got video data", event);
       const data = event.data;
@@ -32938,9 +32952,9 @@ class CallRecorder extends EventEmitter {
       this.emit("remote_chunk", { data });
     };
 
-    this.dcs.video.onerror = (error) => {
-      console.log("video channel error",error)
-    }
+    this.dcs.video.onerror = error => {
+      console.log("video channel error", error);
+    };
 
     this.dcs.video.onclose = () => {
       console.log("remote video closed");
@@ -32950,23 +32964,23 @@ class CallRecorder extends EventEmitter {
     const signal = new ArrayBuffer(5);
 
     this.dcs.signal.onclose = () => {};
-    this.dcs.signal.onerror = (error) => {
-      console.log("remote signal error",error)
-    }
+    this.dcs.signal.onerror = error => {
+      console.log("remote signal error", error);
+    };
 
     this.dcs.signal.send(signal);
     this.localRecorder.start(100);
   }
 
-  async sendVideo(){
-    if (!this.sending){
-      this.sending = true
-      while (this.video_fifo.length && (this.dcs.video.bufferedAmount < 10000)){
+  async sendVideo() {
+    if (!this.sending) {
+      this.sending = true;
+      while (this.video_fifo.length && this.dcs.video.bufferedAmount < 10000) {
         //console.log("sending video", this.dcs.video.bufferedAmount)
-        this.dcs.video.send(this.video_fifo.shift())
+        this.dcs.video.send(this.video_fifo.shift());
       }
     }
-    this.sending = false
+    this.sending = false;
   }
 
   createDataChannels() {
@@ -32987,9 +33001,9 @@ class CallRecorder extends EventEmitter {
       console.log("VIDEO DC CLOSEDs");
     };
 
-    this.dcs.video.onerror = (error) => {
-      console.log("dcs.video.onerror", error)
-    }
+    this.dcs.video.onerror = error => {
+      console.log("dcs.video.onerror", error);
+    };
 
     this.dcs.signal = this.pc.createDataChannel("signal", {
       negotiated: true,
@@ -32997,7 +33011,7 @@ class CallRecorder extends EventEmitter {
     });
     this.dcs.signal.onopen = () => {
       console.log("SIGNAL CHANNEL OPEN", this.dcs.signal);
-      this.call.emit('start')
+      this.call.emit("start");
     };
 
     this.dcs.signal.onclose = () => {
@@ -33012,7 +33026,9 @@ class CallRecorder extends EventEmitter {
     this.dcs.signal.onmessage = event => {
       let recorderState;
       console.log("remote got signal");
-      this.localRecorder = new MediaRecorder(this.localStream, {mimeType: 'video/webm;codecs=vp9'});
+      this.localRecorder = new MediaRecorder(this.localStream, {
+        mimeType: "video/webm;codecs=vp9"
+      });
       this.localRecorder.ondataavailable = ({
         data,
         currentTarget: { state }
@@ -33026,7 +33042,7 @@ class CallRecorder extends EventEmitter {
             i += 512;
           }
           recorderState = state;
-          this.sendVideo()
+          this.sendVideo();
         };
 
         reader.readAsArrayBuffer(data);
@@ -33042,8 +33058,8 @@ class CallRecorder extends EventEmitter {
               this.dcs.video.bufferedAmount
             } bytes, recorderState = ${recorderState}`
           );
-          if (this.video_fifo.length > 0){
-            await this.sendVideo()
+          if (this.video_fifo.length > 0) {
+            await this.sendVideo();
           }
           await wait(1000);
         }
