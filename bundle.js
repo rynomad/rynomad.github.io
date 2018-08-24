@@ -41,13 +41,17 @@ window.pageReady = async function pageReady() {
 
   await client.init()
   window.client = client
+  const callables = new Set()
   client.on('callable', () => {
+    for (const service in client.callService){
+      callables.add(JSON.stringify(service))
+    }
     console.log("got callables", client.callServices)
     const container = document.getElementById('callbuttons')
     while (container.firstChild) {
       container.firstChild.remove();
     }
-    client.callServices.forEach(({seller}) => {
+    Array.from(callables).map(str => JSON.parse(str)).forEach(({seller}) => {
       const el = document.createElement('input')
       el.setAttribute('type','button')
       el.setAttribute('value', seller)
