@@ -59,7 +59,7 @@ window.pageReady = async function pageReady() {
   window.client = client
   const callables = new Set()
   client.on('callable', () => {
-    for (const service in client.callService){
+    for (const service of client.callServices){
       callables.add(JSON.stringify(service))
     }
     console.log("got callables", client.callServices)
