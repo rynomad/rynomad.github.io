@@ -33062,7 +33062,7 @@ class CallRecorder extends EventEmitter {
 
           this.sendVideo();
           if (state === 'inactive'){
-            recording_done === true
+            recording_done = true
           }
         };
 
