@@ -33045,6 +33045,7 @@ class CallRecorder extends EventEmitter {
       this.localRecorder = new MediaRecorder(this.localStream, {
         mimeType: "video/webm;codecs=vp9"
       });
+      let recording_done = false
       this.localRecorder.ondataavailable = ({
         data,
         currentTarget: { state }
@@ -33058,7 +33059,11 @@ class CallRecorder extends EventEmitter {
             i += 512;
           }
           recorderState = state;
+
           this.sendVideo();
+          if (state === 'inactive'){
+            recording_done === true
+          }
         };
 
         reader.readAsArrayBuffer(data);
@@ -33067,7 +33072,7 @@ class CallRecorder extends EventEmitter {
       this.localRecorder.onstop = async () => {
         while (
           this.dcs.video.bufferedAmount > 0 ||
-          this.video_fifo.length > 0
+          this.video_fifo.length > 0 || !recording_done
         ) {
           window.dispatchEvent(new CustomEvent('status',{detail : 
             `flushing ${
@@ -33077,7 +33082,7 @@ class CallRecorder extends EventEmitter {
           if (this.video_fifo.length > 0) {
             this.sendVideo();
           }
-          await wait(2000);
+          await wait(100);
         }
         window.dispatchEvent(new CustomEvent('status',{detail : "no more to flush, closing channel"}));
         this.dcs.video.close();
